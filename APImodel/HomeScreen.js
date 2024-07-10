@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
  export default function HomeScreen ({navigation}) {
   const [cartItems, setCartItems] = React.useState([]);
-
+  
   const addToCart = async (item) => {
     try {
       let existingCartItems = await AsyncStorage.getItem('cartItems');
@@ -20,6 +20,23 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
      
       alert('Item added to cart successfully!. Click on the bag icon at the top of the screen');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
+  };
+  const addToDetail = async (item) => {
+    try {
+      let existingCartItems = await AsyncStorage.getItem('cartItems');
+      existingCartItems = existingCartItems ? JSON.parse(existingCartItems) : [];
+
+      
+      existingCartItems.push(item);
+
+      
+      await AsyncStorage.setItem('cartItems', JSON.stringify(existingCartItems));
+
+     
+      alert('check details of this item!.Click on the bag icon at the top of the screen');
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
@@ -100,9 +117,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
       <StatusBar style="auto" />
       </View>
       <FlatList
-      horizontal={true}
+      horizontal={true}  
       data={paw}
-      renderItem={({item})=>(<View style={styles.conco}><Image source={item.image} style={styles.dresses} />
+      renderItem={({item})=>(<View style={styles.conco}>
+      <Pressable onPress={() => navigation.navigate('Locations', { image:item.image, dressName:item.dressName,dressType:item.dressType,price:item.price})}><Image source={item.image} style={styles.dresses} /></Pressable>
      <Pressable onPress={() => addToCart(item)} style={{ top: -30, left: 150 }}><Ionicons name="add-circle-outline" size={25} color="black"/></Pressable>
       <Text style={styles.flatlistcontainer}>{item.dressName}</Text>
       <Text style={styles.flatlistdescription}>{item.dressType}</Text>
@@ -112,17 +130,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
       <FlatList
       horizontal={true}
       data={wap}
-      renderItem={({item})=>(<View style={styles.conco}><Image source={item.image} style={styles.dresses} />
+      renderItem={({item})=>(<View style={styles.conco}>
+     <Pressable onPress={() => navigation.navigate('Locations', { image:item.image, dressName:item.dressName,dressType:item.dressType,price:item.price})}><Image source={item.image} style={styles.dresses} /></Pressable>
       <Pressable  onPress={() => addToCart(item)} style={{top:-30, left: 150}}><Ionicons name="add-circle-outline" size={25} color="black"/></Pressable>
       <Text style={styles.flatlistcontainer}>{item.dressName}</Text>
       <Text style={styles.flatlistdescription}>{item.dressType}</Text>
       <Text style={styles.flatlistprice}>{item.price}</Text>
       </View>)}
+       keyExtractor={(item) => item.index.toString()}
       />
       <FlatList
       horizontal={true}
       data={awp}
-      renderItem={({item})=>(<View style={styles.conco}><Image source={item.image} style={styles.dresses} />
+      renderItem={({item})=>(<View style={styles.conco}><Pressable onPress={() => navigation.navigate('Locations', { image:item.image, dressName:item.dressName,dressType:item.dressType,price:item.price})}><Image source={item.image} style={styles.dresses} /></Pressable>
       <Pressable  onPress={() => addToCart(item)} style={{top:-30, left: 150}}><Ionicons name="add-circle-outline" size={25} color="black"/></Pressable>
       <Text style={styles.flatlistcontainer}>{item.dressName}</Text>
       <Text style={styles.flatlistdescription}>{item.dressType}</Text>
@@ -132,7 +152,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
       <FlatList
       horizontal={true}
       data={apw}
-      renderItem={({item})=>(<View style={styles.conco}><Image source={item.image} style={styles.dresses} />
+      renderItem={({item})=>(<View style={styles.conco}><Pressable onPress={() => navigation.navigate('Locations', { image:item.image, dressName:item.dressName,dressType:item.dressType,price:item.price})}><Image source={item.image} style={styles.dresses} /></Pressable>
       <Pressable  onPress={() => addToCart(item)} style={{top:-30, left: 150}}><Ionicons name="add-circle-outline" size={25} color="black"/></Pressable>
       <Text style={styles.flatlistcontainer}>{item.dressName}</Text>
       <Text style={styles.flatlistdescription}>{item.dressType}</Text>
