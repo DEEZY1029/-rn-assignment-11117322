@@ -25,13 +25,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
       let existingCartItems = await AsyncStorage.getItem('cartItems');
       existingCartItems = existingCartItems ? JSON.parse(existingCartItems) : [];
 
-      // Remove the item from the list
       const updatedCartItems = existingCartItems.filter(cartItem => cartItem.index !== item.index);
 
-      // Save updated cart items back to AsyncStorage
       await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
 
-      // Update state
       setCartItems(updatedCartItems);
 
      
@@ -51,7 +48,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
        <Image style={{top:5, left: 160}}source={require('./assets/Logo.png')}/>
        <Pressable style={{left: 350, top: -25}}><Ionicons name="search-outline" size={30} color="black"/></Pressable>
        <Text style={{ fontSize:26, top:10, left:130,marginBottom:-30}}>CHECKOUT</Text>
-       <Pressable style={styles.back} onPress={() => navigation.navigate('Home')}><Ionicons name="arrow-back-outline" size={35} color="black"/></Pressable>
+       <Pressable style={styles.back} onPress={() => navigation.navigate('Store')}><Ionicons name="arrow-back-outline" size={35} color="black"/></Pressable>
     </View>
     {cartItems.map((item, index) => (
           <View key={index} style={styles.cartItem}>
