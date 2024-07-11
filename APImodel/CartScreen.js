@@ -7,6 +7,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  export default function CartScreen ({navigation}) {
   const [cartItems, setCartItems] = useState([]);
   
+  function truncateText(text) {
+    const words = text.split(' ');
+    let result = '';
+    for (let i = 0; i < words.length; i++) {
+      result += words[i] + ' ';
+      if ((i + 1) % 3 === 0 && i !== words.length - 1) {
+        result += '\n';
+      }
+    }
+    return result.trim();
+  };
+
     const fetchCartItems = async () => {
       try {
         const storedCartItems = await AsyncStorage.getItem('cartItems');
@@ -18,28 +30,32 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
       }
     };
   
-
-
-  const removeFromCart = async (item) => {
-    try {
-      let existingCartItems = await AsyncStorage.getItem('cartItems');
-      existingCartItems = existingCartItems ? JSON.parse(existingCartItems) : [];
-
-      const updatedCartItems = existingCartItems.filter(cartItem => cartItem.index !== item.index);
-
-      await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
-
-      setCartItems(updatedCartItems);
-
+    const removeFromCart = async (item) => {
+        try {
+          let existingCartItems = await AsyncStorage.getItem('cartItems');
+          existingCartItems = existingCartItems ? JSON.parse(existingCartItems) : [];
+    
+          // Remove the item from the list
+          const updatedCartItems = existingCartItems.filter(cartItem => cartItem.id !== item.id);
+    
+          // Save updated cart items back to AsyncStorage
+          await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+    
+          // Update state
+          setCartItems(updatedCartItems);
+    
+         
+        } catch (error) {
+          console.error('Error removing item from cart:', error);
+        }
+      };
      
-    } catch (error) {
-      console.error('Error removing item from cart:', error);
-    }
-  };
 
   React.useEffect(() => {
     fetchCartItems();
   }, []);
+
+  
 
   return (
     <View style={styles.container}>
@@ -50,23 +66,32 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
        <Text style={{ fontSize:26, top:10, left:130,marginBottom:-30}}>CHECKOUT</Text>
        <Pressable style={styles.back} onPress={() => navigation.navigate('Store')}><Ionicons name="arrow-back-outline" size={35} color="black"/></Pressable>
     </View>
-    {cartItems.map((item, index) => (
-          <View key={index} style={styles.cartItem}>
-            <Image source={item.image} style={styles.itemImage} />
-            <View style={styles.itemDetails}>
-              <Text style={styles.itemName}>{item.dressName}</Text>
-              <Text style={styles.itemdescription}>{item.dressType}</Text>
-              <Text style={styles.itemPrice}>{item.price}</Text>
-            </View>
-            <Pressable  onPress={() => removeFromCart(item)} style={{top:-30, left: 290}}><Ionicons name="close-circle-outline" size={25} color="red"/></Pressable>
-          </View>
-        ))}
+    {cartItems.filter(item => item!== null).map((item) => {
+  if (item) {
+    return (
+      <View key={item.id} style={styles.cartItem}>
+        <View style={styles.itemDetails}>
+          <Image source={{ uri: item.image }} style={styles.itemImage} />
+          <Text style={styles.itemPrice}>{item.price}</Text>
+          <Text style={styles.itemtitle}>{item.title? truncateText(item.title) : ''}</Text>
+          <Text style={styles.itemPrice}>{item.price}</Text>
+        </View>
+        <Pressable onPress={() => removeFromCart(item)} style={{ top: -30, left: 290 }}>
+          <Ionicons name="close-circle-outline" size={25} color="red" />
+        </Pressable>
+      </View>     
+    );
+  } else {
+    return null;
+  }
+})}
+
     </ScrollView>
     <Text style={{fontSize:20, top: 10, left:15}}>EST. TOTAL</Text>
     <View style={{alignItems:'flex-end'}}>
     <Text style={{fontSize:20, top: -15, right:20, color:'orange'}}>$240</Text>
     </View>
-    <Text style={{top:40, fontSize:20}}>hi</Text>
+    <Text style={{top:40, fontSize:20}}>hi</Text> 
     <View style={{alignItems:'center'}}>
     <Pressable style={styles.button}>
     <Ionicons name="bag-handle-outline" size={45} color="white" style={{top:5, right:85}}/>
@@ -108,8 +133,8 @@ const styles = StyleSheet.create({
     marginTop:-50
   },
   itemImage:{
-    top:30,
-    left: 10,
+    top:110,
+    left: -160,
     height:160,
     width:'40%',
     marginTop:10,

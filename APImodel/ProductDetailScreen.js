@@ -5,8 +5,24 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
   function Details ({route,navigation}) {
-    const { image,dressName,dressType,price} = route.params;
+    const {item,image,title,price} = route.params;
+    const addToCart = async (item) => {
+        try {
+          let existingCartItems = await AsyncStorage.getItem('cartItems');
+          existingCartItems = existingCartItems ? JSON.parse(existingCartItems) : [];
     
+          
+          existingCartItems.push(item);
+    
+          
+          await AsyncStorage.setItem('cartItems', JSON.stringify(existingCartItems));
+    
+         
+          alert('Item added to cart successfully!. Click on the bag icon at the top of the screen');
+        } catch (error) {
+          console.error('Error adding to cart:', error);
+        }
+      };
   return (
     <View style={styles.container} >
     <ScrollView style={styles.scroll}>
@@ -15,11 +31,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
     <Pressable style={{right: 150}}><Ionicons name="menu-outline" size={40} color="black"/></Pressable>
      <Pressable style={{left: 110, top: -35}}><Ionicons name="search-outline" size={30} color="black"/></Pressable>
      <Pressable style={{left: 150, top: -67}} onPress={() => navigation.navigate('Checkout')}><Ionicons name="bag-outline" size={30} color="black"/></Pressable>
-     <Image source={image} style={styles.image} />
+     <Image source={{uri:image}} style={styles.image} />
     </View>
     <View style={{marginTop:-50}}>
-  <Text style={styles.name}>{dressName}</Text>
-  <Text style={styles.type}>{dressType}</Text>
+  <Text style={styles.name}>{title}</Text>
   <Text style={styles.dressprice}>{price}</Text>
   </View>
   <Text style={{fontSize:25,top:40, left: 20}}>Materials</Text>
@@ -37,7 +52,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
   <Text style={{fontSize: 16, left:60, marginVertical:5}}>Estimated to be delivered on {'\n'}09/11/2021 - 12/11/2021.</Text>
   <Image style={{top:-70, left:22}}source={require('./assets/Shipping.png')}/>
    </ScrollView>
-   <Pressable style={styles.button}>
+   <Pressable onPress={() => addToCart(item)} style={styles.button}>
     <Ionicons name="add-outline" size={45} color="white" style={{top:25, right:170}}/>
    <Text style={{color:'white', fontSize:20, top:-10, right:70}}>ADD TO BASKET</Text>
    <Ionicons name="heart-outline" size={45} color="white" style={{top:-45, left:130}}/>
@@ -91,7 +106,7 @@ const styles = StyleSheet.create({
     height: 1, 
     backgroundColor: 'grey',    
     width: 300,
-    top:760 ,
+    top:780 ,
     marginVertical:15
   },
   button: {

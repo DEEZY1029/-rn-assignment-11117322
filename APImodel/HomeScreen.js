@@ -1,10 +1,35 @@
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ScrollView, Pressable, FlatList, Image} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Pressable, Image,FlatList} from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
- export default function HomeScreen ({navigation}) {
+ function Store ({navigation}) {
+    const [products,setProducts] = useState([]);
+    useEffect(()=>{
+getProducts();
+    },[]);
+const getProducts=()=>{
+    const URL="https://fakestoreapi.com/products";
+    fetch(URL).then(res=>{
+       return res.json()
+    })
+    .then((data) => {
+        setProducts(data)
+     console.log(data);
+    });
+};
+function truncateText(text) {
+    const words = text.split(' ');
+    let result = '';
+    for (let i = 0; i < words.length; i++) {
+      result += words[i] + ' ';
+      if ((i + 1) % 3 === 0 && i !== words.length - 1) {
+        result += '\n';
+      }
+    }
+    return result.trim();
+  }
   const [cartItems, setCartItems] = React.useState([]);
   
   const addToCart = async (item) => {
@@ -24,89 +49,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
       console.error('Error adding to cart:', error);
     }
   };
-  const addToDetail = async (item) => {
-    try {
-      let existingCartItems = await AsyncStorage.getItem('cartItems');
-      existingCartItems = existingCartItems ? JSON.parse(existingCartItems) : [];
 
-      
-      existingCartItems.push(item);
-
-      
-      await AsyncStorage.setItem('cartItems', JSON.stringify(existingCartItems));
-
-     
-      alert('check details of this item!.Click on the bag icon at the top of the screen');
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-    }
-  };
-
-  const paw =[
-    { index:1,
-   image: require ('./assets/dress1.png'),
-   dressName:'Office wear',
-   dressType:'Reversible angorra cardigan',
-   price:'$120'
-    },
-    { index:2,
-      image: require('./assets/dress2.png'),
-      dressName:'Black',
-   dressType:'Reversible angorra cardigan',
-   price:'$120'
-       },
-  ];
-
-  const wap=[
-    {
-    index:3,
-    image: require ('./assets/dress3.png'),
-    dressName:'Church wear',
-    dressType:'Reversible angorra cardigan',
-    price:'$120'
-     },
-     { index:4,
-       image: require('./assets/dress4.png'),
-       dressName:'Lamerei',
-    dressType:'Reversible angorra cardigan',
-    price:'$120'
-        },
-  ];
-  const awp=[
-    {
-    index:5,
-    image: require ('./assets/dress5.png'),
-    dressName:'21WN',
-    dressType:'Reversible angorra cardigan',
-    price:'$120'
-     },
-     { index:6,
-       image: require('./assets/dress6.png'),
-       dressName:'Lopo',
-    dressType:'Reversible angorra cardigan',
-    price:'$120'
-        },
-  ];
-  const apw=[
-    {
-    index:7,
-    image: require ('./assets/dress7.png'),
-    dressName:'21WN',
-    dressType:'Reversible angorra cardigan',
-    price:'$120'
-     },
-     { index:8,
-       image: require('./assets/dress3.png'),
-       dressName:'Lamerei',
-    dressType:'Reversible angorra cardigan',
-    price:'$120'
-        },
-  ];
   return (
-
-    <ScrollView style={styles.ScrollView}>
+    <ScrollView style={styles.scroll}>
     <View style={styles.container}>
-      <View style={styles.positioning}>
+     <View style={styles.positioning}>
       <Image style={{top:25, left: -5}}source={require('./assets/Logo.png')}/>
      <Pressable style={{right: 150}}><Ionicons name="menu-outline" size={40} color="black"/></Pressable>
      <Pressable style={{left: 110, top: -35}}><Ionicons name="search-outline" size={30} color="black"/></Pressable>
@@ -116,61 +63,40 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
      <Pressable style={styles.list}><Ionicons name="list-outline" size={25} color="black"/></Pressable>
       <StatusBar style="auto" />
       </View>
-      <FlatList
-      horizontal={true}  
-      data={paw}
-      renderItem={({item})=>(<View style={styles.conco}>
-      <Pressable onPress={() => navigation.navigate('Locations', { image:item.image, dressName:item.dressName,dressType:item.dressType,price:item.price})}><Image source={item.image} style={styles.dresses} /></Pressable>
-     <Pressable onPress={() => addToCart(item)} style={{ top: -30, left: 150 }}><Ionicons name="add-circle-outline" size={25} color="black"/></Pressable>
-      <Text style={styles.flatlistcontainer}>{item.dressName}</Text>
-      <Text style={styles.flatlistdescription}>{item.dressType}</Text>
-      <Text style={styles.flatlistprice}>{item.price}</Text>
-      </View>)}
-      />
-      <FlatList
-      horizontal={true}
-      data={wap}
-      renderItem={({item})=>(<View style={styles.conco}>
-     <Pressable onPress={() => navigation.navigate('Locations', { image:item.image, dressName:item.dressName,dressType:item.dressType,price:item.price})}><Image source={item.image} style={styles.dresses} /></Pressable>
-      <Pressable  onPress={() => addToCart(item)} style={{top:-30, left: 150}}><Ionicons name="add-circle-outline" size={25} color="black"/></Pressable>
-      <Text style={styles.flatlistcontainer}>{item.dressName}</Text>
-      <Text style={styles.flatlistdescription}>{item.dressType}</Text>
-      <Text style={styles.flatlistprice}>{item.price}</Text>
-      </View>)}
-       keyExtractor={(item) => item.index.toString()}
-      />
-      <FlatList
-      horizontal={true}
-      data={awp}
-      renderItem={({item})=>(<View style={styles.conco}><Pressable onPress={() => navigation.navigate('Locations', { image:item.image, dressName:item.dressName,dressType:item.dressType,price:item.price})}><Image source={item.image} style={styles.dresses} /></Pressable>
-      <Pressable  onPress={() => addToCart(item)} style={{top:-30, left: 150}}><Ionicons name="add-circle-outline" size={25} color="black"/></Pressable>
-      <Text style={styles.flatlistcontainer}>{item.dressName}</Text>
-      <Text style={styles.flatlistdescription}>{item.dressType}</Text>
-      <Text style={styles.flatlistprice}>{item.price}</Text>
-      </View>)}
-      />
-      <FlatList
-      horizontal={true}
-      data={apw}
-      renderItem={({item})=>(<View style={styles.conco}><Pressable onPress={() => navigation.navigate('Locations', { image:item.image, dressName:item.dressName,dressType:item.dressType,price:item.price})}><Image source={item.image} style={styles.dresses} /></Pressable>
-      <Pressable  onPress={() => addToCart(item)} style={{top:-30, left: 150}}><Ionicons name="add-circle-outline" size={25} color="black"/></Pressable>
-      <Text style={styles.flatlistcontainer}>{item.dressName}</Text>
-      <Text style={styles.flatlistdescription}>{item.dressType}</Text>
-      <Text style={styles.flatlistprice}>{item.price}</Text>
-      </View>)}
-      />
-    </View>
-    </ScrollView>
+    <FlatList
+        data={products}
+        renderItem={({item})=>(<View>
+            <Pressable onPress={() => navigation.navigate('Locations', { image:item.image, title:item.title,price:item.price})}><Image source={{uri:item.image}} style={styles.dresses} resizeMode='contain'/></Pressable>
+            <Pressable onPress={() => addToCart(item)} style={{ top: -30, left: 150 }}><Ionicons name="add-circle-outline" size={25} color="black"/></Pressable>
+            <Text style={{fontSize:11 ,left: 10}}> {truncateText(item.title, 4)}</Text>
+            <Text style={{left:10, color:'orange'}}>{item.price}</Text>
+            
+        </View>)}
+        keyExtractor={item => item.id.toString()}
+        numColumns={2}
+        />
+   </View>
+   </ScrollView>
+    
   );
-}
+};
 
 const styles = StyleSheet.create({
-    ScrollView:{
- backgroundColor: '#fff'
-    },
   container: {
     flex: 1,
     backgroundColor: '#fff',
+
+  },
+  scroll:{
+   
+    backgroundColor: '#fff',
+    
+  },
+  dresses:{
+    left: 10,
+    marginHorizontal:10,
+    width:170,
+    height:220
   },
   positioning: {
     alignItems:'center',
@@ -197,25 +123,5 @@ const styles = StyleSheet.create({
     alignItems:'center',
     marginTop: -20
   },
-  dresses:{
-    left: 10,
-    marginHorizontal:10
-  },
-  flatlistcontainer:{
-    fontSize: 16,
-    left: 20,
-    top:-20
-  },
-  flatlistdescription:{
-    fontSize: 11,
-    left: 20,
-    color: 'grey',
-    top:-20
-  },
-  flatlistprice:{
-    left: 20,
-    fontSize: 20,
-    color:'orange',
-    top:-20
-  }
 });
+export default Store;
